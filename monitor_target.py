@@ -43,9 +43,11 @@ while True:
         diff = cv2.absdiff(img, orig_img)
         
         #if not the same, figure out where new shot is
-        if diff.mean() > 20:
+        #try to up the sensitivity
+        if diff.mean() > 3:
+            #print('go')
             log_time = datetime.datetime.now()
-            diff = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+            #diff = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
             diff = cv2.blur(diff, (10, 10)) # blur the image
             
             ret, thresh = cv2.threshold(diff,50,255,0)
@@ -53,18 +55,22 @@ while True:
             
             center_coords = []
             for c in contours:
-                M = cv2.moments(c)
-                cX = int(M["m10"] / M["m00"])
-                cY = int(M["m01"] / M["m00"])
+                try:
+                    M = cv2.moments(c)
+                    cX = int(M["m10"] / M["m00"])
+                    cY = int(M["m01"] / M["m00"])
 
-                center_coords.append((log_time, cX, cY))
-                
-            with open('tmp.csv', 'a') as f:
-                writer = csv.writer(f)
-                writer.writerows(center_coords)
-            
-            #overwrite original image with the new one for future comparisons
-            orig_img = img
+                    center_coords.append((log_time, cX, cY))
+                except:
+                    pass
+            if len(center_coords) > 0:
+                #print(center_coords)
+                with open('tmp.csv', 'a') as f:
+                    writer = csv.writer(f)
+                    writer.writerows(center_coords)
+
+                #overwrite original image with the new one for future comparisons
+                orig_img = img
             
     except(KeyboardInterrupt):
         webcam.release()

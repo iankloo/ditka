@@ -31,7 +31,7 @@ while True:
         diff = cv2.absdiff(img, orig_img).mean()
         
         #if not same, save new image and overwrite original for comparisons
-        if diff > 20:
+        if diff > 3:
             cv2.imwrite(filename='/home/pi/Desktop/shot_output/'+str(file_counter)+'_shot.jpg', img=img)
             orig_img = img
             file_counter += 1

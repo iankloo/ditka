@@ -4,6 +4,8 @@ import os
 import csv
 import datetime
 from tkinter import *
+from datetime import datetime
+
 
 # Creating the tkinter window
 root = Tk()
@@ -18,11 +20,11 @@ root.mainloop()
 
 
 #create empty CSV
-header = ['timestamp', 'x', 'y']
-with open('tmp.csv', 'w') as f: 
-    csvwriter = csv.writer(f)
-    csvwriter.writerow(header)
-    f.close()
+# header = ['timestamp', 'x', 'y']
+# with open('tmp.csv', 'w') as f: 
+#     csvwriter = csv.writer(f)
+#     csvwriter.writerow(header)
+#     f.close()
 
 #setup web cam
 webcam = cv2.VideoCapture(0)
@@ -32,17 +34,23 @@ check, frame = webcam.read()
 frame = cv2.flip(frame, -1)
 orig_img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
+#make folder for debug images
+write_file = '/media/pi/USB_DRIVE/shot_data/shot_output_' + str(datetime.now()) + '/'
+#files = os.listdir(write_file)
+
+
 #write first image to file for debug
-files = os.listdir('/home/pi/Desktop/shot_output/')
-if len(files) > 0:
-    orig_img = cv2.imread('/home/pi/Desktop/shot_output/'+files[-1])
-    orig_img = cv2.cvtColor(orig_img, cv2.COLOR_BGR2GRAY)
-    file_counter = int(files[-1].split('_')[0])
-else:
-    #save initial image
-    orig_img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite(filename='/home/pi/Desktop/shot_output/0_shot.jpg', img=orig_img)
-    file_counter = 1
+
+# files = os.listdir(write_file)
+# if len(files) > 0:
+#     orig_img = cv2.imread(write_file+files[-1])
+#     orig_img = cv2.cvtColor(orig_img, cv2.COLOR_BGR2GRAY)
+#     file_counter = int(files[-1].split('_')[0])
+# else:
+#save initial image
+orig_img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+cv2.imwrite(filename=write_file+'0_shot.jpg', img=orig_img)
+file_counter = 1
 
     
 while True:
@@ -59,7 +67,7 @@ while True:
         #try to up the sensitivity
         if diff.mean() > 3:
             #just output images now to see what we get
-            cv2.imwrite(filename='/home/pi/Desktop/shot_output/'+str(file_counter)+'_shot.jpg', img=img)
+            cv2.imwrite(filename=write_file+str(file_counter)+'_shot.jpg', img=img)
             orig_img = img
             file_counter += 1
 
